@@ -10,21 +10,26 @@ pipeline {
         stage('Build') {
             steps {
                 echo '🔨 Building the application...'
-                // Example: compile code
                 sh 'echo Compiling source code...'
             }
         }
+
         stage('Clone Target') {
             steps {
-                git clone https://github.com/ashisheeSoft/node-repo-two.git
-                git status 
+                echo '📥 Cloning second repository...'
+                // Cloning another repo using shell command
+                sh '''
+                    rm -rf node-repo-two
+                    git clone https://github.com/ashisheeSoft/node-repo-two.git
+                    cd node-repo-two
+                    git status
+                '''
             }
         }
 
         stage('Test') {
             steps {
                 echo '🧪 Running tests...'
-                // Example: run unit tests
                 sh 'echo Running tests...'
             }
         }
@@ -32,7 +37,6 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo '🚀 Deploying application...'
-                // Example: copy files or run deployment script
                 sh 'echo Deploying to dev environment...'
             }
         }
