@@ -2,55 +2,43 @@ pipeline {
     agent any
 
     environment {
-        // Define environment variables if needed
-        APP_ENV = 'development'
+        TARGET_REPO = 'https://github.com/ashisheeSoft/node-repo-two.git'
+        FILE_TO_COPY = 'README.md'  // adjust your file name here
+        COMMIT_MSG = '🔁 Copied file from main repo'
     }
 
     stages {
-        stage('Build') {
-            steps {
-                echo '🔨 Building the application...'
-                sh 'echo Compiling source code...'
-            }
-        }
-
         stage('Clone Target') {
             steps {
-                echo '📥 Cloning second repository...'
-                // Cloning another repo using shell command
-                sh '''
-                    rm -rf node-repo-two
-                    git clone https://github.com/ashisheeSoft/node-repo-two.git
-                    cd node-repo-two
-                    git status
-                '''
+                echo '📥 Cloning target repository...'
+                sh 'rm -rf node-repo-two'
+                sh 'git clone ${TARGET_REPO}'
             }
         }
 
-        stage('Test') {
+        stage('Copy and Push File') {
             steps {
-                echo '🧪 Running tests...'
-                sh 'echo Running tests...'
-            }
-        }
-
-        stage('Deploy') {
-            steps {
-                echo '🚀 Deploying application...'
-                sh 'echo Deploying to dev environment...'
+                echo '📤 Copying file and pushing to target repo...'
+                // Use Jenkins credentials for Git push
+                withCredentials([usernamePassword(credentialsId: 'GIT_CREDENTIAL_ID', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PASS')]) {
+                    sh '''
+                        cp ${FILE_TO_COPY} node-repo-two/
+                        cd node-repo-two
+                        sh "rm -rf ${FILE_TO_COPY}"
+                        git config user.email "ashishsharmaen1014@gmail.com"
+                        git config user.name "ashisheeSoft"
+                        git add ${FILE_TO_COPY}
+                        git commit -m "${COMMIT_MSG}" || echo "Nothing to commit"
+                        git push https://${GIT_USER}:${GIT_PASS}@github.com/ashisheeSoft/node-repo-two.git HEAD:main
+                    '''
+                }
             }
         }
     }
 
     post {
         always {
-            echo '📦 Pipeline finished.'
-        }
-        success {
-            echo '✅ Build succeeded!'
-        }
-        failure {
-            echo '❌ Build failed!'
+            echo '✅ Pipeline finished.'
         }
     }
 }
