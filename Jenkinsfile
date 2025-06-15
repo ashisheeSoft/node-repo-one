@@ -14,6 +14,12 @@ pipeline {
                 sh 'echo Compiling source code...'
             }
         }
+        stage('Clone Target') {
+            steps {
+                git clone https://github.com/ashisheeSoft/node-repo-two.git
+                git status 
+            }
+        }
 
         stage('Test') {
             steps {
