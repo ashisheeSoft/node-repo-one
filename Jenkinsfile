@@ -20,7 +20,7 @@ pipeline {
             steps {
                 echo '📤 Copying file and pushing to target repo...'
                 // Use Jenkins credentials for Git push
-                withCredentials([usernamePassword(credentialsId: 'GIT_CREDENTIAL_ID', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PASS')]) {
+                withCredentials([usernamePassword(credentialsId: 'git-token-admin', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PASS')]) {
                     sh '''
                         cp ${FILE_TO_COPY} node-repo-two/
                         cd node-repo-two
